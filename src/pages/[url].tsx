@@ -35,6 +35,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       `${process.env.NEXT_PUBLIC_API_URL}url/${context.query.url}/`
     );
     const data = await res.json();
+    if (!(data.url.includes("http://") || data.url.includes("https://"))) {
+      data.url = "http://" + data.url;
+    }
     return {
       props: { url: data.url },
       redirect: {
