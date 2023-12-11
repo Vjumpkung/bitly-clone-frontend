@@ -1,16 +1,36 @@
-import { Clipboard, Copy } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import copy from "copy-to-clipboard";
+import Swal from "sweetalert2";
+import Spinner from "@/components/spinner";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [shortUrl, setShortUrl] = useState<string>("");
-  const [notification, setNotification] = useState<string>("");
+
+  const isValidUrl = (urlString: string) => {
+    var urlPattern = new RegExp(
+      "^(https?:\\/\\/)?" +
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" +
+        "((\\d{1,3}\\.){3}\\d{1,3}))" +
+        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" +
+        "(\\?[;&a-z\\d%_.~+=-]*)?" +
+        "(\\#[-a-z\\d_]*)?$",
+      "i"
+    );
+    return !!urlPattern.test(urlString);
+  };
 
   async function submitUrl() {
-    setIsLoading(true);
-    const url = document.querySelector("input[type=url]") as HTMLInputElement;
+    const url = document.getElementById("url_input") as HTMLInputElement;
+    if (!isValidUrl(url.value)) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please enter a valid URL",
+      });
+      return;
+    }
     try {
+      setIsLoading(true);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}url`, {
         method: "POST",
         headers: {
@@ -19,20 +39,39 @@ export default function Home() {
         body: JSON.stringify({ url: url.value }),
       });
       const data = await res.json();
-      setShortUrl(window.location.href + data.shorturl);
+      if (res.status !== 201) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.message[0],
+        });
+        return;
+      }
+      Swal.fire({
+        icon: "success",
+        title: "Your URL has been shortened",
+        text: window.location.href + data.shorturl,
+        confirmButtonText: "Copy",
+        confirmButtonColor: "#10b018",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          copy(window.location.href + data.shorturl);
+          Swal.fire({
+            title: "Copied!",
+            text: "Your shortened URL has been copied to clipboard",
+          });
+        }
+      });
     } catch {
       alert("Error");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
     } finally {
       setIsLoading(false);
     }
-  }
-
-  async function copyShortenedUrl() {
-    copy(shortUrl);
-    setNotification("Copied!");
-    setTimeout(() => {
-      setNotification("");
-    }, 1000);
   }
 
   return (
@@ -40,10 +79,11 @@ export default function Home() {
       <h1 className="text-5xl font-mono py-5">bitly-clone</h1>
       <div className="px-5 mb-5 max-w-xl w-full">
         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Your very long URL
+          Your very very long URL.
         </label>
         <input
           type="url"
+          id="url_input"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         />
@@ -56,27 +96,11 @@ export default function Home() {
             Shorten
           </button>
         </center>
-        <div className="mt-5 flex">
-          <div className="pr-2">
-            <span className="block text-md font-medium text-white">
-              Your short URL : {shortUrl}
-            </span>
+        <center>
+          <div className="px-2 py-2">
+            {isLoading ? <Spinner /> : <div className="w-12 h-12"></div>}
           </div>
-          <div className="pl-2">
-            <button
-              className="disabled:cursor-not-allowed"
-              onClick={copyShortenedUrl}
-              disabled={shortUrl === ""}
-            >
-              <Clipboard color="#FFFFFF" size={32} />
-            </button>
-          </div>
-          <div className="pr-2">
-            <span className="pl-2 block text-md font-medium text-white">
-              {notification}
-            </span>
-          </div>
-        </div>
+        </center>
       </div>
     </main>
   );

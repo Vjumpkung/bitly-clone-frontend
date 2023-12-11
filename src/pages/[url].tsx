@@ -41,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       props: { url: data.url },
       redirect: {
-        destination: data !== "null" ? data.url : "",
+        destination: data.url,
         permanent: false,
       },
     };
