@@ -6,25 +6,23 @@ const post = ({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
-    <div className="flex flex-col items-center justify-center w-screen h-screen bg-gray-900">
-      <div>
-        {data == null ? (
-          <div>
-            <h1 className="text-5xl font-mono py-5">Invalid link</h1>
-            <Link href="/">
-              <center>
-                <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:bg-blue-300 disabled:cursor-not-allowed">
-                  Go back home
-                </button>
-              </center>
-            </Link>
-          </div>
-        ) : (
-          <div>
-            <h1>Redirecting.......</h1>
-          </div>
-        )}
-      </div>
+    <div className="mb-auto mt-auto">
+      {data == null ? (
+        <div>
+          <h1 className="text-5xl font-mono py-5">Invalid link</h1>
+          <Link href="/">
+            <center>
+              <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:bg-blue-300 disabled:cursor-not-allowed">
+                Go back home
+              </button>
+            </center>
+          </Link>
+        </div>
+      ) : (
+        <div>
+          <h1>Redirecting.......</h1>
+        </div>
+      )}
     </div>
   );
 };
@@ -36,7 +34,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
     const data = await res.json();
     if (!(data.url.includes("http://") || data.url.includes("https://"))) {
-      data.url = "http://" + data.url;
+      data.url = "https://" + data.url;
     }
     return {
       props: { url: data.url },

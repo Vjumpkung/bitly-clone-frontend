@@ -63,7 +63,6 @@ export default function Home() {
         }
       });
     } catch {
-      alert("Error");
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -75,32 +74,37 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-col items-center justify-center w-screen h-screen bg-gray-900">
-      <h1 className="text-5xl font-mono py-5">bitly-clone</h1>
-      <div className="px-5 mb-5 max-w-xl w-full">
-        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Your very very long URL.
-        </label>
-        <input
-          type="url"
-          id="url_input"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-        />
-        <center>
-          <button
-            className="mt-5 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:bg-blue-300 disabled:cursor-not-allowed"
-            onClick={submitUrl}
-            disabled={isLoading}
-          >
-            Shorten
-          </button>
-        </center>
-        <center>
-          <div className="px-2 py-2">
-            {isLoading ? <Spinner /> : <div className="w-12 h-12"></div>}
-          </div>
-        </center>
+    <main className="mb-auto mt-auto w-full max-w-xl">
+      <div className="px-5 mb-5">
+        <div className="mx-auto">
+          <h1 className="text-5xl font-mono py-5 text-center">bitly-clone</h1>
+          <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Your very very long URL.
+          </label>
+          <input
+            type="url"
+            id="url_input"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+          />
+        </div>
+        <div className="w-12 h-12 mx-auto py-3">
+          {isLoading ? (
+            <div className="mt-5">
+              <Spinner />
+            </div>
+          ) : (
+            <div className="flex flex-row justify-center">
+              <button
+                className="px-4 m-auto text-center mt-5 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded disabled:bg-blue-300 disabled:cursor-not-allowed"
+                onClick={submitUrl}
+                disabled={isLoading}
+              >
+                Shorten
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );
