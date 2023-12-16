@@ -2,26 +2,14 @@ import { useState } from "react";
 import copy from "copy-to-clipboard";
 import Swal from "sweetalert2";
 import Spinner from "@/components/spinner";
+import validator from "validator";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const isValidUrl = (urlString: string) => {
-    var urlPattern = new RegExp(
-      "^(https?:\\/\\/)?" +
-        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" +
-        "((\\d{1,3}\\.){3}\\d{1,3}))" +
-        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" +
-        "(\\?[;&a-z\\d%_.~+=-]*)?" +
-        "(\\#[-a-z\\d_]*)?$",
-      "i"
-    );
-    return !!urlPattern.test(urlString);
-  };
-
   async function submitUrl() {
     const url = document.getElementById("url_input") as HTMLInputElement;
-    if (!isValidUrl(url.value)) {
+    if (!validator.isURL(url.value)) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
