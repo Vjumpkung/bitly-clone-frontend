@@ -1,6 +1,7 @@
 import React from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Link from "next/link";
+import client from "@/module/fetch_client";
 
 const post = ({
   data,
@@ -28,24 +29,30 @@ const post = ({
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}url/${context.query.url}/`
-    );
-    const data = await res.json();
-    if (!(data.url.includes("http://") || data.url.includes("https://"))) {
-      data.url = "https://" + data.url;
-    }
-    return {
-      props: { url: data.url },
-      redirect: {
-        destination: data.url,
-        permanent: false,
-      },
-    };
-  } catch {
+  const url: string = context.params?.url?.toString()
+    ? context.params?.url?.toString()
+    : "";
+
+  const res = await client.GET("/url/{shorturl}", {
+    params: { path: { shorturl: url } },
+  });
+
+  if (res.response.status !== 200) {
     return { props: { url: null } };
   }
+
+  const data = res.data;
+
+  return {
+    props: { data },
+    redirect: {
+      destination:
+        data?.url.includes("http://") || data?.url.includes("https://")
+          ? data?.url
+          : "https://" + data?.url,
+      permanent: false,
+    },
+  };
 };
 
 export default post;

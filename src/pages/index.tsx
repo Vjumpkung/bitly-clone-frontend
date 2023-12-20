@@ -3,6 +3,7 @@ import copy from "copy-to-clipboard";
 import Swal from "sweetalert2";
 import Spinner from "@/components/spinner";
 import validator from "validator";
+import client from "@/module/fetch_client";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -17,48 +18,36 @@ export default function Home() {
       });
       return;
     }
-    try {
-      setIsLoading(true);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}url`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url: url.value }),
-      });
-      const data = await res.json();
-      if (res.status !== 201) {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: data.message[0],
-        });
-        return;
-      }
-      Swal.fire({
-        icon: "success",
-        title: "Your URL has been shortened",
-        text: window.location.href + data.shorturl,
-        confirmButtonText: "Copy",
-        confirmButtonColor: "#10b018",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          copy(window.location.href + data.shorturl);
-          Swal.fire({
-            title: "Copied!",
-            text: "Your shortened URL has been copied to clipboard",
-          });
-        }
-      });
-    } catch {
+
+    setIsLoading(true);
+    const res = await client.POST("/url", { body: { url: url.value } });
+
+    const data = await res.data;
+    if (res.response.status !== 201) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Something went wrong!",
       });
-    } finally {
       setIsLoading(false);
+      return;
     }
+    Swal.fire({
+      icon: "success",
+      title: "Your URL has been shortened",
+      text: window.location.href + data?.shorturl,
+      confirmButtonText: "Copy",
+      confirmButtonColor: "#10b018",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        copy(window.location.href + data?.shorturl);
+        Swal.fire({
+          title: "Copied!",
+          text: "Your shortened URL has been copied to clipboard",
+        });
+      }
+    });
+    setIsLoading(false);
   }
 
   return (
