@@ -29,24 +29,23 @@ export default function Home() {
         title: "Oops...",
         text: "Something went wrong!",
       });
-      setIsLoading(false);
-      return;
+    } else {
+      Swal.fire({
+        icon: "success",
+        title: "Your URL has been shortened",
+        text: window.location.href + data?.shorturl,
+        confirmButtonText: "Copy",
+        confirmButtonColor: "#10b018",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          copy(window.location.href + data?.shorturl);
+          Swal.fire({
+            title: "Copied!",
+            text: "Your shortened URL has been copied to clipboard",
+          });
+        }
+      });
     }
-    Swal.fire({
-      icon: "success",
-      title: "Your URL has been shortened",
-      text: window.location.href + data?.shorturl,
-      confirmButtonText: "Copy",
-      confirmButtonColor: "#10b018",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        copy(window.location.href + data?.shorturl);
-        Swal.fire({
-          title: "Copied!",
-          text: "Your shortened URL has been copied to clipboard",
-        });
-      }
-    });
     setIsLoading(false);
   }
 
@@ -74,7 +73,7 @@ export default function Home() {
             <div className="flex flex-row justify-center">
               <button
                 className="px-4 m-auto text-center mt-5 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded disabled:bg-blue-300 disabled:cursor-not-allowed"
-                onClick={submitUrl}
+                onClick={() => submitUrl()}
                 disabled={isLoading}
               >
                 Shorten
