@@ -5,7 +5,7 @@ import Head from "next/head";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-between w-screen h-screen bg-white dark:bg-gray-900">
+    <div className="fixed top-0 bottom-0 right-0 left-0 z-10 flex flex-col items-center justify-center bg-white dark:bg-gray-900">
       <Head>
         <title>bitly clone</title>
       </Head>

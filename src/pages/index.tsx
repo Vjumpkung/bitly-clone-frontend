@@ -50,7 +50,7 @@ export default function Home() {
   }
 
   return (
-    <main className="mb-auto mt-auto w-full max-w-xl">
+    <main className="my-auto w-full max-w-xl">
       <div className="px-5 mb-5">
         <div className="mx-auto">
           <h1 className="text-5xl font-mono py-5 text-center">bitly-clone</h1>
